@@ -37,22 +37,31 @@
 ridl <- function(action,
                  ...,
                  .encoding = "json") {
-  if(Sys.setenv(USE_UAT=1))  {
-    
+
+  print("Running ridl action", action)
+
+  # It's ok to check the environment using Sys.setenv()?
+  # Should Sys.getenv() will be better?
+  if(Sys.getenv("USE_UAT") == 0)  {
+      token <- Sys.getenv("RIDL_API_TOKEN")
+      print(" - env: PRODUCTION")
+      print(" - key", substr(token,1,5))
       r <- httr::POST("https://ridl.unhcr.org/",
                  path = glue::glue("/api/action/{action}"),
                 # httr::add_headers("Authorization" = Sys.getenv("RIDL_API_KEY")),
-                 httr::add_headers("Authorization" = Sys.getenv("RIDL_API_TOKEN")),
+                 httr::add_headers("X-CKAN-API-Key" = token),
                  body = rlang::list2(...),
                  encode = .encoding) %>%
             httr::content(simplifyVector = TRUE) 
       
     } else {
-      
+      token <- Sys.getenv("RIDL_UAT_API_TOKEN")
+      print(" - env: UAT")
+      print(" - key", substr(token,1,5))
       r <- httr::POST("https://ridl-uat.unhcr.org/",
                  path = glue::glue("/api/action/{action}"),
                 # httr::add_headers("Authorization" = Sys.getenv("RIDL_API_KEY_UAT")),
-                 httr::add_headers("Authorization" = Sys.getenv("RIDL_UAT_API_TOKEN")),
+                 httr::add_headers("X-CKAN-API-Key" = token),
                  body = rlang::list2(...),
                  encode = .encoding) %>%
             httr::content(simplifyVector = TRUE) }
