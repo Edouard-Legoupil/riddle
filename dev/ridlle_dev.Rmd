@@ -63,6 +63,7 @@ knitr::kable(riddle::keywords)
 #'
 #' @param action Operation to execute. See [CKAN's API documentation](https://docs.ckan.org/en/2.9/api/) for details.
 #' @param .encoding HTTP POST encoding to use - one of `json`, `form`, or `multipart`.
+#' @param verbose TRUE FALSE to display info on the console about the API call
 #' @importFrom httr POST
 #'
 #'
@@ -71,18 +72,21 @@ knitr::kable(riddle::keywords)
 
 ridl <- function(action,
                  ...,
-                 .encoding = "json") {
+                 .encoding = "json",
+                 verbose = FALSE) {
      # if(Sys.setenv(USE_UAT=1))  {
-    
-      print( c("Running ridl action", action))
+      if(verbose == TRUE) {print( c("Running ridl action", action))}
+      
 
       # It's ok to check the environment using Sys.setenv()?
       # Should Sys.getenv() will be better?
       if(Sys.getenv("USE_UAT") == 1)  {
         token <- Sys.getenv("RIDL_UAT_API_TOKEN")
-        print(" - env: UAT")
+        if(verbose == TRUE) {print(" - env: UAT")}
+        #print(" - env: UAT")
         #nchar(token) - show the end of the token as the beginning is more likely to be the same... 
-        print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )
+        if(verbose == TRUE) {print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )}
+        #print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )
       
         r <- httr::POST("https://ridl-uat.unhcr.org/",
                  path = glue::glue("/api/action/{action}"),
@@ -96,9 +100,12 @@ ridl <- function(action,
     } else    {
       
       token <- Sys.getenv("RIDL_API_TOKEN")
-      print(" - env: PRODUCTION")
+        if(verbose == TRUE) {print(" - env: PRODUCTION")}
+        # print(" - env: PRODUCTION")
+      
       #nchar(token) - show the end of the token as the beginning is more likely to be the same... 
-      print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )
+        if(verbose == TRUE) { print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )}
+       #  print( c(" - key", substr(token, (nchar(token)-5) , nchar(token))  ) )
     
       r <- httr::POST("https://ridl.unhcr.org/",
                  path = glue::glue("/api/action/{action}"),
@@ -112,7 +119,8 @@ ridl <- function(action,
        }
   
   ## Display results in console
-  message(r$result)
+    if(verbose == TRUE) {message(r$result)}
+  
   ## Error catching
   if (!r$success)
     stop(r$error %>%
@@ -139,6 +147,138 @@ test_that("ridl works", {
  # expect_error(ridl(action = "invalid"), "Invalid action: invalid")
   })
 ```
+
+# container_show
+    
+```{r function-container_show}
+#' 
+#' 
+#' Get an overview of accessible infos about all containers in RIDL
+#'  Use https://docs.ckan.org/en/2.9/api/index.html#ckan.logic.action.get.organization_show
+#' @return
+#' 
+#' @export
+container_show <- function(metadata) {
+      ridl(action ="organization_show",
+           type = "data-container",
+                    all_fields = TRUE,
+                    include_groups = TRUE ) -> r
+      r$result  |> length() -> res
+    
+      return(res)  }
+```
+  
+```{r example-container_show}
+#container_show()
+```
+  
+```{r tests-container_show}
+test_that("container_show works", {
+  expect_true(inherits(container_show, "function")) 
+})
+```
+
+
+# container_list
+    
+```{r function-container_list}
+#' container_list
+#' 
+#' Provide a list of all child containers for a specific container
+#' 
+#' This function is used to generate a regional dashbaord..
+#' Be carefull - it's an expansive functions at it needs to parse the entire 
+#' content of the server.... 
+#' 
+#' uses https://docs.ckan.org/en/2.9/api/index.html#ckan.logic.action.get.organization_list
+#' 
+#' @return catalog of containers
+#' 
+#' @importFrom tibble as_tibble
+#' @importFrom tidyr unnest_wider
+#' @importFrom purrr map list_rbind
+#' 
+#' @export
+container_list <- function(parent) {
+    
+    ## First we list all the containers in the server
+    container_get <- function() {
+      ridl(action ="organization_list",
+           type = "data-container" ) -> r
+      r$result  |> length() -> res
+    
+      return(res)  }
+    cont <- container_get()
+    
+    ## Now we build the full catalog 
+    catalog <-
+      purrr::map(seq(0, cont, by = 25),
+          \(x) ridl(action ="organization_list",
+                    type = "data-container",
+                    offset = x,
+                    all_fields = TRUE,
+                    include_groups = TRUE)  %>% .[["result"]]) |>
+      purrr::list_rbind() |>
+      tidyr::unnest_wider(groups, names_sep = "_") |>
+      tibble::as_tibble()
+    
+    return(catalog)
+}
+ 
+```
+  
+```{r example-container_list}
+catalog <- container_list()
+```
+  
+```{r tests-container_list}
+test_that("container_list works", {
+  expect_true(inherits(container_list, "function")) 
+})
+```
+  
+  
+# find_child_containers
+    
+```{r function-find_child_containers}
+#' find_child_containers
+#' 
+#' Provide a list of all child containers - including nested one - for a specific container
+#' 
+#' Be carefull - it's an expansive functions at it needs to parse the entire 
+#' content of the server.... 
+#' 
+#' @param parent name of the parent container
+#' @param catalog daaframe object with a catalog of container produced by container_list()
+#' 
+#' @return vector with all child container
+#' 
+#' @export
+find_child_containers <- function(parent, catalog ) {
+   # catalog <- container_list()
+    
+    find_child_containers2 <- function(parent) {
+    ## Now we filter the catalog only for the children of the desired container
+      children <- filter(catalog, groups_name == parent)$name
+      if (is_empty(children))
+        return(NULL)
+      c(children, unlist(map(children, find_child_containers2))) }
+}
+```
+  
+```{r example-find_child_containers}
+catalog <- container_list()
+containerAmericas <- find_child_containers(parent = "americas",
+                                           catalog = catalog)
+```
+  
+```{r tests-find_child_containers}
+test_that("find_child_containers works", {
+  expect_true(inherits(find_child_containers, "function")) 
+})
+```
+  
+
 
 # dataset_metadata
 
