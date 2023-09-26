@@ -1,3 +1,13 @@
+## riddle  0.0.3
+
+ * Added eval parameters when search to avoid API error...  https://github.com/Edouard-Legoupil/riddle/issues/8
+
+## riddle  0.0.2
+
+ * Added method to pull all stuff from within a container - https://github.com/Edouard-Legoupil/riddle/issues/5
+
+
+
 ## riddle  0.0.1
 
 Contribution from Edouard:

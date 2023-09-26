@@ -90,11 +90,16 @@ To create a dataset, you need first to document the dataset metadata, including 
 reference to the container where you would like the new dataset to be created.
 Once the dataset is created, you can add as many resources as required (either `data` or `attachment`). 
 
-```{r}
+``` 
+
 library(riddle)
+
 ## let use UAT 
+
 Sys.setenv(USE_UAT=1)
+
 ## First we create the dataset metadata
+
 m <- dataset_metadata(title = "Motor Trend Car Road Tests",
                       name = "testing-riddle",
                       notes = "The data was extracted from the 1974 Motor Trend 
@@ -111,12 +116,17 @@ m <- dataset_metadata(title = "Motor Trend Car Road Tests",
                       data_collection_technique = "oth",
                       archived = "False")
                       
+                      
 ## For the above to work - you need to make sure you have at least editor access
+
 # to the corresponding container - i.e. owner_org = "americas"
+
 p <- dataset_create(m)
 
 # The return value is a representation of the dataset we just created in
+
 # RIDL that you could inspect like any other R object.
+
 p 
 ```
 
@@ -134,7 +144,8 @@ are building an operational dataset, scrapping an official data source from the 
 
 
 Below is simple example using the `mtcars` dataset as an example.
-```{r}
+
+``` 
 library(riddle)
 ## let's get again the details of the dataset we want to add the resource in 
 # based on a search...
@@ -172,10 +183,8 @@ and/or data story telling report as a new `attachement` resource within a datase
 You can check a practical example of such use case here:[kobocruncher](https://edouard-legoupil.github.io/kobocruncher/)
 
 
-```{r}
+``` 
 library(riddle)
-
-
 
 # And once we’re done experimenting with the API, we should take down our
 # toy dataset since we don’t really need it on RIDL.

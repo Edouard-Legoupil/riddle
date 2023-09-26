@@ -1,10 +1,13 @@
 Package: riddle
 Title: An API wrapper to interact with the UNHCR RIDL Platform
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: c(
-    person("Hisham", "Galal", , "galalh@unhcr.org", role = c("aut", "cre")),
-    person("Edouard", "Legoupil", , "legoupil@unhcr.org", role = "aut")
+    person("Edouard", "Legoupil", , "legoupil@unhcr.org", role = c("aut", "cre") ),
+    person("Matheus", "Soldi Hardt", , "matheus@unhcr.org", role ="aut"),
+    person("Hisham", "Galal", , "galalh@unhcr.org", role = "aut"),
+    person("UNHCR", role = "cph")
   )
+Maintainer: Edouard Legoupil <legoupil@unhcr.org>
 Description: The package wraps functions to work with the RIDL API
     ridl.unhcr.org from R.
 License: MIT + file LICENSE
