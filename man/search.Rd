@@ -30,8 +30,9 @@ Searches for datasets and resources satisfying a given criteria.
 \examples{
 #-----
 # Test search in prod
-Sys.unsetenv("USE_UAT")
-# p <- dataset_search(q = "cbi")
+# Sys.unsetenv("USE_UAT")
+# searching <- "cbi"
+# p <- dataset_search(q = searching, rows = 30)
 # p
 
 
