@@ -31,6 +31,9 @@ Suggests:
     testthat
 VignetteBuilder: 
     knitr
+Remotes: 
+    edouard-legoupil/unhcrshiny,
+    vidonne/unhcrdown 
 Config/fusen/version: 0.5.2
 Encoding: UTF-8
 LazyData: true
