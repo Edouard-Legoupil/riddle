@@ -1,6 +1,7 @@
 ^riddle\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
+^.github$
 ^LICENSE\.md$
 ^_pkgdown\.yml$
 ^docs$

@@ -26,12 +26,8 @@ find_child_containers <- function(parent, catalog ) {
     
     find_child_containers2 <- function(parent) {
     ## Now we filter the catalog only for the children of the desired container
-      children <- dplyr::filter(catalog, groups_name == parent)$name
-      if (rlang::is_empty(children))
+      children <- filter(catalog, groups_name == parent)$name
+      if (is_empty(children))
         return(NULL)
-      c(children, unlist(purrr::map(children, find_child_containers2))) }
-    
-   result <-  find_child_containers2(parent)
-
+      c(children, unlist(map(children, find_child_containers2))) }
 }
-

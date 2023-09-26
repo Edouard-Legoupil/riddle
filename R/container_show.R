@@ -17,3 +17,12 @@ container_show <- function(id) {
     r$result %>% 
     dataset_tibblify() -> res
 }
+
+# container_show <- function(metadata) {
+#       ridl(action ="organization_show",
+#            type = "data-container",
+#                     all_fields = TRUE,
+#                     include_groups = TRUE ) -> r
+#       r$result  |> length() -> res
+#     
+#       return(res)  }

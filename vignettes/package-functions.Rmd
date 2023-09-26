@@ -51,6 +51,7 @@ library(riddle)
   
 
 ```{r example-container_list}
+
 # catalog <- container_list()
 # groups_name <- catalog |>
 #                   dplyr::select(groups_name) |>
@@ -67,6 +68,8 @@ library(riddle)
 
     
 
+  
+ 
   
 
 ```{r example-find_child_containers}

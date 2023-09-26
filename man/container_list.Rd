@@ -23,6 +23,7 @@ content of the server....
 uses https://docs.ckan.org/en/2.9/api/index.html#ckan.logic.action.get.organization_list
 }
 \examples{
+
 # catalog <- container_list()
 # groups_name <- catalog |>
 #                   dplyr::select(groups_name) |>

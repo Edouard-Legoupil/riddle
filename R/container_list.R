@@ -18,6 +18,7 @@
 #' 
 #' @export
 #' @examples
+#'
 #' # catalog <- container_list()
 #' # groups_name <- catalog |>
 #' #                   dplyr::select(groups_name) |>

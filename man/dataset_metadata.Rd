@@ -114,7 +114,7 @@ dataset_metadata(
 
 \item{...}{ignored.}
 
-\item{`hxl-ated`}{HXL-ated.}
+\item{`hxl-ated`}{HXL-ated. Allowed values: \code{False} (No), \code{True} (Yes).}
 }
 \value{
 A list with the provided metadata.
