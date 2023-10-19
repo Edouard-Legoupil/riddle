@@ -161,12 +161,16 @@ test_that("ridl works", {
 #' @return a dataframe with container metadata
 #' 
 #' @export
+
 container_show <- function(id) {
-      ridl(action ="organization_show",
+    r <-  ridl(action ="organization_show",
            include_datasets = TRUE,
-           id = id)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+           id = id) 
+    
+    res <- r$result %>% 
+           dataset_tibblify()  
+    
+    return(res)
 }
 
 # container_show <- function(metadata) {
@@ -214,9 +218,10 @@ container_list <- function(parent) {
     
     ## First we list all the containers in the server
     container_get <- function() {
-      ridl(action ="organization_list",
-           type = "data-container" ) -> r
-      r$result  |> length() -> res
+      r <- ridl(action ="organization_list",
+           type = "data-container" )  
+      
+      res <- r$result  |> length() 
     
       return(res)  }
     cont <- container_get()
@@ -631,31 +636,36 @@ test_that("dataset_tibblify works", {
 #' @return The dataset.
 #' @export
 dataset_create <- function(metadata) { 
-  ridl(action ="package_create",
-       !!!metadata) -> r
-    r$result %>% 
-    dataset_tibblify() -> res
+    r <- ridl(action ="package_create",
+       !!!metadata) 
+    
+    res <- r$result %>% 
+    dataset_tibblify()  
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_show <- function(id) { 
-  ridl(action ="package_show",
-       id = id)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+  
+    r <- ridl(action ="package_show",
+       id = id)
+    
+    res <- r$result %>% 
+          dataset_tibblify()
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_update <- function(id, metadata) { 
-  ridl(action ="package_update", 
-       id = id, 
-       !!!metadata)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+  
+   res <-  ridl(action ="package_update", 
+                id = id, 
+                !!!metadata)
+   
+   res <-  r$result %>% 
+           dataset_tibblify() 
   
   return(res)  }
 
@@ -663,26 +673,27 @@ dataset_update <- function(id, metadata) {
 #' @export
 dataset_patch <- function(id, 
                           metadata) { 
-  ridl(action ="package_patch",
+    r <- ridl(action ="package_patch",
        id = id, 
-       !!!metadata) -> r
-    r$result %>% 
-    dataset_tibblify() -> res
+       !!!metadata)
+    
+    res <- r$result %>% 
+           dataset_tibblify()
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_delete <- function(id) { 
-  ridl(action ="package_delete",
-       id = id) -> r
+  
+  r <- ridl(action ="package_delete",
+       id = id)
      
   
   return( cat("dataset deleted")) }
 ```
   
 ```{r example-dataset}
-
 
 #-----
 # test search in prod
@@ -765,22 +776,37 @@ Sys.unsetenv("USE_UAT")
 #' 
 #' @return A tibble with the search results.
 #' @export
-dataset_search <- function(q = NULL, rows = NULL, start = NULL) {
+dataset_search <- function(q = NULL, 
+                           rows = NULL, 
+                           start = NULL) {
   search_result <- ridl(action ="package_search", 
-            !!!(as.list(lapply(match.call()[-1], 
-                               FUN=function(argument) {
-                                 return(eval(argument))
-                                 }))))
+                        q = q,
+                        rows = rows
+                        
+      # This part construct an argument list for the ridl function. 
+      # The triple-bang operator (!!!) is used to "unquote" the list, 
+      # effectively passing its contents as separate arguments 
+      # match.call()[-1]  extract the arguments passed to the current function 
+      #      !!!(as.list(lapply(match.call()[-1], 
+      #  turns the arguments into their actual values,
+      # effectively unwrapping expressions that may have been passed as arguments.   
+      #                        FUN = function(argument) { return(eval(argument))}
+      #                        )) )
+      )
 
   if (purrr::is_empty(search_result[["result"]])) {
     search_results <- tibble::tibble()
 
   } else {
-    search_result[["result"]][["results"]] %>%
-    dplyr::mutate(dplyr::across(tidyselect::vars_select_helpers$where(is.data.frame),
-                                ~purrr::pmap(., ~tibble::tibble(...)))) %>%
-    tibble::as_tibble() -> search_results
-    }
+    
+    search_results <- search_result[["result"]][["results"]] %>%
+      dplyr::mutate(dplyr::across(
+        tidyselect::vars_select_helpers$where(is.data.frame),
+        ~ purrr::pmap(., ~ tibble::tibble(...))
+      )) %>%
+      tibble::as_tibble() 
+  }
+  
   return(search_results)
 }
 
@@ -987,12 +1013,14 @@ test_that("resource_tibblify works", {
 resource_create <- function(package_id, res_metadata) {
   ## enc needs to be adjusted to multipart in case a file is uploaded...
   enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_create", 
+  
+  r <- ridl(action ="resource_create", 
        package_id = package_id,
        !!!res_metadata,
-       .encoding = enc) -> r
-    r$result %>% 
-    resource_tibblify() -> res
+       .encoding = enc) 
+  
+  res <- r$result %>% 
+           resource_tibblify()  
   
   return(res)
   
@@ -1005,10 +1033,12 @@ resource_create <- function(package_id, res_metadata) {
 resource_search <- function(query = NULL,
                             rows = NULL, 
                             start = NULL) {
-  ridl(action ="resource_search",
-       !!!(as.list(match.call()[-1])))-> r
-    r$results %>% 
-    tibble::as_tibble() -> res
+  
+    r <- ridl(action ="resource_search",
+          !!!(as.list(match.call()[-1])))  
+    
+    res <- r$results %>% 
+          tibble::as_tibble()  
   
   return(res)
 }
@@ -1020,12 +1050,14 @@ resource_search <- function(query = NULL,
 #' @export
 resource_update <- function(id, res_metadata) {
   enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_update",
-       id = id,
-       !!!res_metadata,
-       .encoding = enc) -> r
-    r$result %>% 
-    resource_tibblify()-> res
+  
+  r <- ridl(action ="resource_update",
+            id = id,
+            !!!res_metadata,
+            .encoding = enc) 
+  
+   res <-  r$result %>% 
+           resource_tibblify()
   
   return(res)
 }
@@ -1042,27 +1074,32 @@ resource_upload <- function(package_id, res_metadata) {
   if(m$name %in% resources_in_dataset[[1]][[1]][["name"]]) {
     
     # Increase version in Metadata
-    res_metadata$version <- as.character(as.numeric(resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("version")][[1]]) + 1L)
+    res_metadata$version <-
+      as.character(as.numeric(resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("version")][[1]]) + 1L)
     
     enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-    ridl(action ="resource_update",
+    
+    r <-  ridl(action ="resource_update",
          id = resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("id")][[1]],  # find the resource ID
          !!!res_metadata,
-         .encoding = enc) -> r
-    r$result %>% 
-      resource_tibblify()-> res
+         .encoding = enc) 
+    
+    res <- r$result %>% 
+           resource_tibblify()
     
     return(res)
     
   } else {
     ## enc needs to be adjusted to multipart in case a file is uploaded...
     enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-    ridl(action ="resource_create", 
+    
+    r <- ridl(action ="resource_create", 
          package_id = package_id,
          !!!res_metadata,
-         .encoding = enc) -> r
-    r$result %>% 
-      resource_tibblify() -> res
+         .encoding = enc)
+    
+    res <- r$result %>% 
+          resource_tibblify()
     
     return(res)
   }
@@ -1073,14 +1110,16 @@ resource_upload <- function(package_id, res_metadata) {
 #' @rdname resource
 #' @export
 resource_patch <- function(id, res_metadata) {
-  enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_patch",
-       id = id,
-       !!!res_metadata, 
-       .encoding = enc) -> r
   
-    r$result %>% 
-    resource_tibblify()-> res
+  enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
+  
+  r <- ridl(action ="resource_patch",
+            id = id,
+            !!!res_metadata, 
+            .encoding = enc)
+  
+   res <-  r$result %>% 
+           resource_tibblify() 
   
   return(res)
 }
@@ -1088,8 +1127,9 @@ resource_patch <- function(id, res_metadata) {
 #' @rdname resource
 #' @export
 resource_delete <- function(id) { 
-  ridl(action ="resource_delete",
-       id = id) -> r
+  
+  r <- ridl(action ="resource_delete",
+       id = id)  
   
   return( cat("Resource deleted"))}
 

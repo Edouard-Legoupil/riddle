@@ -47,7 +47,6 @@ not explicitly provided in the \code{metadata}.
 }
 \examples{
 
-
 #-----
 # test search in prod
 Sys.unsetenv("USE_UAT")

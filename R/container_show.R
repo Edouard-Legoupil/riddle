@@ -10,12 +10,16 @@
 #' @export
 #' @examples
 #' # americasdataset <- container_show( id = "americas-regional-dataset")
+
 container_show <- function(id) {
-      ridl(action ="organization_show",
+    r <-  ridl(action ="organization_show",
            include_datasets = TRUE,
-           id = id)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+           id = id) 
+    
+    res <- r$result %>% 
+           dataset_tibblify()  
+    
+    return(res)
 }
 
 # container_show <- function(metadata) {

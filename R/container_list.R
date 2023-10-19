@@ -28,9 +28,10 @@ container_list <- function(parent) {
     
     ## First we list all the containers in the server
     container_get <- function() {
-      ridl(action ="organization_list",
-           type = "data-container" ) -> r
-      r$result  |> length() -> res
+      r <- ridl(action ="organization_list",
+           type = "data-container" )  
+      
+      res <- r$result  |> length() 
     
       return(res)  }
     cont <- container_get()

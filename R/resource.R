@@ -124,12 +124,14 @@
 resource_create <- function(package_id, res_metadata) {
   ## enc needs to be adjusted to multipart in case a file is uploaded...
   enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_create", 
+  
+  r <- ridl(action ="resource_create", 
        package_id = package_id,
        !!!res_metadata,
-       .encoding = enc) -> r
-    r$result %>% 
-    resource_tibblify() -> res
+       .encoding = enc) 
+  
+  res <- r$result %>% 
+           resource_tibblify()  
   
   return(res)
   
@@ -142,10 +144,12 @@ resource_create <- function(package_id, res_metadata) {
 resource_search <- function(query = NULL,
                             rows = NULL, 
                             start = NULL) {
-  ridl(action ="resource_search",
-       !!!(as.list(match.call()[-1])))-> r
-    r$results %>% 
-    tibble::as_tibble() -> res
+  
+    r <- ridl(action ="resource_search",
+          !!!(as.list(match.call()[-1])))  
+    
+    res <- r$results %>% 
+          tibble::as_tibble()  
   
   return(res)
 }
@@ -157,12 +161,14 @@ resource_search <- function(query = NULL,
 #' @export
 resource_update <- function(id, res_metadata) {
   enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_update",
-       id = id,
-       !!!res_metadata,
-       .encoding = enc) -> r
-    r$result %>% 
-    resource_tibblify()-> res
+  
+  r <- ridl(action ="resource_update",
+            id = id,
+            !!!res_metadata,
+            .encoding = enc) 
+  
+   res <-  r$result %>% 
+           resource_tibblify()
   
   return(res)
 }
@@ -179,27 +185,32 @@ resource_upload <- function(package_id, res_metadata) {
   if(m$name %in% resources_in_dataset[[1]][[1]][["name"]]) {
     
     # Increase version in Metadata
-    res_metadata$version <- as.character(as.numeric(resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("version")][[1]]) + 1L)
+    res_metadata$version <-
+      as.character(as.numeric(resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("version")][[1]]) + 1L)
     
     enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-    ridl(action ="resource_update",
+    
+    r <-  ridl(action ="resource_update",
          id = resources_in_dataset$resources[[1]][resources_in_dataset$resources[[1]]["name"] == res_metadata$name, c("id")][[1]],  # find the resource ID
          !!!res_metadata,
-         .encoding = enc) -> r
-    r$result %>% 
-      resource_tibblify()-> res
+         .encoding = enc) 
+    
+    res <- r$result %>% 
+           resource_tibblify()
     
     return(res)
     
   } else {
     ## enc needs to be adjusted to multipart in case a file is uploaded...
     enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-    ridl(action ="resource_create", 
+    
+    r <- ridl(action ="resource_create", 
          package_id = package_id,
          !!!res_metadata,
-         .encoding = enc) -> r
-    r$result %>% 
-      resource_tibblify() -> res
+         .encoding = enc)
+    
+    res <- r$result %>% 
+          resource_tibblify()
     
     return(res)
   }
@@ -210,14 +221,16 @@ resource_upload <- function(package_id, res_metadata) {
 #' @rdname resource
 #' @export
 resource_patch <- function(id, res_metadata) {
-  enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
-  ridl(action ="resource_patch",
-       id = id,
-       !!!res_metadata, 
-       .encoding = enc) -> r
   
-    r$result %>% 
-    resource_tibblify()-> res
+  enc <- if(is.null(res_metadata$upload)) "json" else "multipart"
+  
+  r <- ridl(action ="resource_patch",
+            id = id,
+            !!!res_metadata, 
+            .encoding = enc)
+  
+   res <-  r$result %>% 
+           resource_tibblify() 
   
   return(res)
 }
@@ -225,8 +238,9 @@ resource_patch <- function(id, res_metadata) {
 #' @rdname resource
 #' @export
 resource_delete <- function(id) { 
-  ridl(action ="resource_delete",
-       id = id) -> r
+  
+  r <- ridl(action ="resource_delete",
+       id = id)  
   
   return( cat("Resource deleted"))}
 

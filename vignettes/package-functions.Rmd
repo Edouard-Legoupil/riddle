@@ -145,7 +145,6 @@ m1
 
 ```{r example-dataset}
 
-
 #-----
 # test search in prod
 Sys.unsetenv("USE_UAT")

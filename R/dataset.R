@@ -29,7 +29,6 @@
 #' @export
 #' @examples
 #'
-#'
 #' #-----
 #' # test search in prod
 #' Sys.unsetenv("USE_UAT")
@@ -85,31 +84,36 @@
 #'
 #'
 dataset_create <- function(metadata) { 
-  ridl(action ="package_create",
-       !!!metadata) -> r
-    r$result %>% 
-    dataset_tibblify() -> res
+    r <- ridl(action ="package_create",
+       !!!metadata) 
+    
+    res <- r$result %>% 
+    dataset_tibblify()  
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_show <- function(id) { 
-  ridl(action ="package_show",
-       id = id)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+  
+    r <- ridl(action ="package_show",
+       id = id)
+    
+    res <- r$result %>% 
+          dataset_tibblify()
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_update <- function(id, metadata) { 
-  ridl(action ="package_update", 
-       id = id, 
-       !!!metadata)-> r
-    r$result %>% 
-    dataset_tibblify() -> res
+  
+   res <-  ridl(action ="package_update", 
+                id = id, 
+                !!!metadata)
+   
+   res <-  r$result %>% 
+           dataset_tibblify() 
   
   return(res)  }
 
@@ -117,19 +121,21 @@ dataset_update <- function(id, metadata) {
 #' @export
 dataset_patch <- function(id, 
                           metadata) { 
-  ridl(action ="package_patch",
+    r <- ridl(action ="package_patch",
        id = id, 
-       !!!metadata) -> r
-    r$result %>% 
-    dataset_tibblify() -> res
+       !!!metadata)
+    
+    res <- r$result %>% 
+           dataset_tibblify()
   
   return(res)  }
 
 #' @rdname dataset
 #' @export
 dataset_delete <- function(id) { 
-  ridl(action ="package_delete",
-       id = id) -> r
+  
+  r <- ridl(action ="package_delete",
+       id = id)
      
   
   return( cat("dataset deleted")) }

@@ -8,5 +8,8 @@ globalVariables(unique(c(
   # find_child_containers : find_child_containers2:
   "groups_name",
   # resource_upload:
-  "m", "resources"
+  "m", "resources",
+
+  # dataset_update:
+  "r"
 )))

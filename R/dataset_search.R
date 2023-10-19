@@ -32,22 +32,37 @@
 #' Sys.setenv(USE_UAT=1)
 #' # p2 <- dataset_search(q = "testedouard2")
 #'
-dataset_search <- function(q = NULL, rows = NULL, start = NULL) {
+dataset_search <- function(q = NULL, 
+                           rows = NULL, 
+                           start = NULL) {
   search_result <- ridl(action ="package_search", 
-            !!!(as.list(lapply(match.call()[-1], 
-                               FUN=function(argument) {
-                                 return(eval(argument))
-                                 }))))
+                        q = q,
+                        rows = rows
+                        
+      # This part construct an argument list for the ridl function. 
+      # The triple-bang operator (!!!) is used to "unquote" the list, 
+      # effectively passing its contents as separate arguments 
+      # match.call()[-1]  extract the arguments passed to the current function 
+      #      !!!(as.list(lapply(match.call()[-1], 
+      #  turns the arguments into their actual values,
+      # effectively unwrapping expressions that may have been passed as arguments.   
+      #                        FUN = function(argument) { return(eval(argument))}
+      #                        )) )
+      )
 
   if (purrr::is_empty(search_result[["result"]])) {
     search_results <- tibble::tibble()
 
   } else {
-    search_result[["result"]][["results"]] %>%
-    dplyr::mutate(dplyr::across(tidyselect::vars_select_helpers$where(is.data.frame),
-                                ~purrr::pmap(., ~tibble::tibble(...)))) %>%
-    tibble::as_tibble() -> search_results
-    }
+    
+    search_results <- search_result[["result"]][["results"]] %>%
+      dplyr::mutate(dplyr::across(
+        tidyselect::vars_select_helpers$where(is.data.frame),
+        ~ purrr::pmap(., ~ tibble::tibble(...))
+      )) %>%
+      tibble::as_tibble() 
+  }
+  
   return(search_results)
 }
 

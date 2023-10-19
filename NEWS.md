@@ -1,3 +1,8 @@
+## riddle  0.0.4
+
+ * Fix some issues with parameter parsing for dataset search
+ * Clean some coding style
+
 ## riddle  0.0.3
 
  * Added eval parameters when search to avoid API error...  https://github.com/Edouard-Legoupil/riddle/issues/8
