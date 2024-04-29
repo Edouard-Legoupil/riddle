@@ -1,3 +1,8 @@
+## riddle  0.0.5
+
+ * Added a report template to quickly set up a data exploration from any data shared in RIDL and upload the notebook and PDF report directly with riddle_notebook - and then upload it back... - Create a new markdown template - add in the parameter the ridl dataset id - Et voila..
+
+
 ## riddle  0.0.4
 
  * Fix some issues with parameter parsing for dataset search

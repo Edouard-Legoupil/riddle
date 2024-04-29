@@ -1,0 +1,112 @@
+---
+title: "RIDL Data Exploration"
+params:
+  datafolder: "data-raw" ## This is the default folder where to put you data in
+  ridl: "ridldataset" ## Name of the ridl project where you data is documented and archived
+  download: "no" ## put to "yes" in order to initially load all ridl dataset in you R project
+  publish: "no" ## put to "yes" in order to add your report, source and analysis plan as ressource within the same ridl dataset
+  visibility: "public"
+subtitle: "`r riddle::dataset_show(params$ridl)$title `"
+date: "`r format(Sys.Date(),  '%d %B %Y')`"
+author:
+  - name: Edouard Legoupil
+    affiliation: Senior Regional Evaluation Officer
+    email: legoupil@unhcr.org
+output:
+  unhcrdown::paged_simple:
+    back_html: true
+paged-footnotes: true
+links-to-footnotes: true
+# uncomment this line to produce HTML and PDF in RStudio:
+knit: pagedown::chrome_print
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  comment = "#>",
+  fig.align = "centre",
+  fig.height = 4,
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE,
+  fig.retina = 2,
+  fig.showtext = TRUE,
+  dev = "ragg_png",
+  dpi = 300)
+
+```
+
+```{r packages, include=FALSE, message=FALSE, warning=FALSE}
+# Load required packages for charts with UNHCR style 
+library(unhcrthemes)
+library(ggplot2)
+library(tidyverse) 
+library(scales)
+library(ragg)
+library(knitr) 
+library(readxl)
+library(janitor) 
+library(riddle)
+```
+
+
+```{r}
+## Download all dataset within the ridl project in the data folder
+# First let's get the dataset metadata
+p <- riddle::dataset_show(params$ridl)
+list_of_resources <- p[["resources"]][[1]]
+```
+
+
+```{r}
+url <- list_of_resources |>
+       dplyr::filter(type == "data") 
+for ( i in 1:nrow(url)){
+ # i <- 1
+  ur <- as.character(url[i, c("url")])
+   url[i, c("filename")]  =    strsplit(ur, "/")[[1]][length(strsplit(ur, "/")[[1]])] 
+  } 
+       
+```
+
+
+```{r download_if_required}
+
+## Load all the dataset from the ridl project
+if( params$download == "yes") {
+  
+  ## Create the outfolder if it does not exist
+  data_dir <- paste0(getwd(),"/",params$datafolder)
+  if (!dir.exists(data_dir)) {dir.create(data_dir)}
+
+  for ( i in 1:nrow(url)){ 
+   riddle::resource_fetch(url =  as.character(url[i, c("url")]),  
+                          path =  here::here(params$datafolder, url[i, c("filename")] ))
+  }
+}
+
+```
+
+# Introduction {-}
+
+This data crunching report allows to quickly explore the results of the dataset published within [UNHCR UNHCR Raw Internal Data Library (RIDL)](`r paste0("https://ridl.unhcr.org/dataset/",params$ridl ) `).
+
+This RIDL project includes the following files: `r url$filename `
+
+
+# Exploration {-}
+
+
+
+```{r publication_in_ridl}
+## Time to archive your work once done!!
+
+if( params$publish == "yes"){
+  namethisfile = basename(rstudioapi::getSourceEditorContext()$path )  
+  riddle_notebook(ridl = params$ridl,
+            datafolder = params$datafolder, 
+            namethisfile =  namethisfile ,
+            visibility =  params$visibility ) }
+```

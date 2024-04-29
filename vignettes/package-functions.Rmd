@@ -442,6 +442,29 @@ m1
   
 
 
+# riddle_notebook
+
+    
+
+  
+
+```{r example-riddle_notebook}
+## Time to archive your work once done!!
+# used in the  RIDL_Notebook markdown template in the package
+# if( params$publish == "yes"){
+#   namethisfile = basename(rstudioapi::getSourceEditorContext()$path )  
+#   riddle_notebook(ridl = params$ridl,
+#             datafolder = params$datafolder, 
+#             namethisfile =  namethisfile ,
+#             visibility =  params$visibility ) }
+```
+
+  
+
+  
+
+
+
 # summary_report
 
     
