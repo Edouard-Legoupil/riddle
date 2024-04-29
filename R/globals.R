@@ -11,5 +11,7 @@ globalVariables(unique(c(
   "m", "resources",
 
   # dataset_update:
-  "r"
+  "r",
+  # riddle_notebook:
+  "id"
 )))

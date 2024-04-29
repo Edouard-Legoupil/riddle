@@ -124,7 +124,7 @@ riddle_notebook <- function(ridl,
                                                                                name,"_", ridl,"_", time,
                                                                              " report. Built using riddle "),
                                                         format = "rmd",
-                                                        version = (curversion + 1),
+                                                        version = (as.integer(curversion) + 1),
                                                         visibility =  visibility,
                                            #             file_type = "other",
                                            file_type = "script",
@@ -164,7 +164,7 @@ riddle_notebook <- function(ridl,
   
   ## 3.  and now the generated report - that should be hopefully already generated ####
   namereport = paste0("output_",  name, ridl )
-  if(stage == "interpretation_prez") { filext <- ".pptx"} else if(stage == "technical_report") { filext <- ".docx" } else { filext <- ".html" }
+  filext <- ".pdf" 
   ### Check if the name is already in the resources
   if(namereport %in% list_of_resources$name) {
     ## get the resource id
@@ -182,7 +182,7 @@ riddle_notebook <- function(ridl,
                                                                        name, " built on ", time,
                                                                      " using riddle package "),
                                                 format = filext,
-                                                version = (curversion + 1),
+                                                version = (as.integer(curversion) + 1),
                                                 visibility =  visibility,
                                                 file_type = "report",
                                                 ## Revise here based on the name from your crunching report
