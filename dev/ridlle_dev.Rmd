@@ -1423,7 +1423,7 @@ riddle_notebook <- function(ridl,
   # "source_code_repo"
   
     ### 2.  Now publish the current notebook #######
-  namenotebook = paste0("notebook_", stage, name, ridl)
+  namenotebook = paste0("notebook_",    ridl)
   ### Check if the name is already in the resources
   if(namenotebook %in% list_of_resources$name) {
     ## get the resource id
@@ -1435,10 +1435,10 @@ riddle_notebook <- function(ridl,
       dplyr::filter ( name == namenotebook) |>
       dplyr::pull(version)
     metadataanalysisscript <- riddle::resource_metadata(type = "script",
-                                                        url = paste0("notebook_", stage, name, ridl, time, ".Rmd"),
+                                                        url = paste0("notebook_",  name, ridl, time, ".Rmd"),
                                                         name = namenotebook,
                                                         description = paste0("Notebook for ",
-                                                                             stage,"_", name,"_", ridl,"_", time,
+                                                                               name,"_", ridl,"_", time,
                                                                              " report. Built using riddle "),
                                                         format = "rmd",
                                                         version = (curversion + 1),
@@ -1458,10 +1458,10 @@ riddle_notebook <- function(ridl,
                             res_metadata =  metadataanalysisscript)
   } else {
     metadataanalysisscript <- riddle::resource_metadata(type = "script",
-                                                        url = paste0("notebook_", stage, name, ridl, time, ".Rmd"),
+                                                        url = paste0("notebook_",   name, ridl, time, ".Rmd"),
                                                         name = namenotebook,
                                                         description = paste0("Notebook for ",
-                                                                             stage,"_", name,"_", ridl,"_", time,
+                                                                               name,"_", ridl,"_", time,
                                                                              " report. Built using riddle "),
                                                         format = "Rmd",
                                                         visibility =  visibility,
@@ -1480,7 +1480,7 @@ riddle_notebook <- function(ridl,
   }
   
   ## 3.  and now the generated report - that should be hopefully already generated ####
-  namereport = paste0("output_", stage, name, ridl )
+  namereport = paste0("output_",  name, ridl )
   if(stage == "interpretation_prez") { filext <- ".pptx"} else if(stage == "technical_report") { filext <- ".docx" } else { filext <- ".html" }
   ### Check if the name is already in the resources
   if(namereport %in% list_of_resources$name) {
@@ -1493,10 +1493,10 @@ riddle_notebook <- function(ridl,
       dplyr::filter ( name == namereport) |>
       dplyr::pull(version)
     metadatareport <- riddle::resource_metadata(type = "attachment",
-                                                url = paste0(stage, name, ridl, time,".html"),
-                                                name = paste0(stage, name, ridl, time),
+                                                url = paste0( name, ridl, time,".html"),
+                                                name = paste0( name, ridl, time),
                                                 description = paste0("Generated Report: ",
-                                                                     stage,", ", name, " built on ", time,
+                                                                       name, " built on ", time,
                                                                      " using riddle package "),
                                                 format = filext,
                                                 version = (curversion + 1),
@@ -1510,10 +1510,10 @@ riddle_notebook <- function(ridl,
                             res_metadata = metadatareport)
   } else {
     metadatareport <- riddle::resource_metadata(type = "attachment",
-                                                url = paste0(stage, name, ridl, time,".pdf"),
-                                                name = paste0(stage, name, ridl, time),
+                                                url = paste0( name, ridl, time,".pdf"),
+                                                name = paste0( name, ridl, time),
                                                 description = paste0("Generated Report: ",
-                                                                     stage,", ", name, " built on ", time,
+                                                                       name, " built on ", time,
                                                                      " using ridlle package   "),
                                                 format = filext,
                                                 visibility =  visibility,
