@@ -73,14 +73,11 @@ for ( i in 1:nrow(url)){
 
 
 ```{r download_if_required}
-
-## Load all the dataset from the ridl project
-if( params$download == "yes") {
-  
   ## Create the outfolder if it does not exist
   data_dir <- paste0(getwd(),"/",params$datafolder)
   if (!dir.exists(data_dir)) {dir.create(data_dir)}
-
+## Load all the dataset from the ridl project
+if( params$download == "yes") {
   for ( i in 1:nrow(url)){ 
    riddle::resource_fetch(url =  as.character(url[i, c("url")]),  
                           path =  here::here(params$datafolder, url[i, c("filename")] ))

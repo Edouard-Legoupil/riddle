@@ -1,4 +1,4 @@
 name: RIDL_Notebook
 description: >
    RIDL Dataset Exploration
-create_dir: TRUE
+create_dir: FALSE
